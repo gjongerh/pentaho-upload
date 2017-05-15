@@ -6,6 +6,8 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+import com.virtorg.bi.tst.components.UploadFileREST;
+
 @Configuration
 @EnableScheduling
 public class SparklUploadConfiguration {
@@ -16,4 +18,5 @@ public class SparklUploadConfiguration {
 		taskSchedular.setPoolSize(5);
 		return (TaskScheduler) taskSchedular;
 	}
+	
 }
