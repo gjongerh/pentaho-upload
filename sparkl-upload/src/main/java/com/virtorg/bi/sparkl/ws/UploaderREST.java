@@ -21,32 +21,43 @@ import javax.ws.rs.core.UriInfo;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
-@Path("/{plugin}/api/upload")
+@Path("/{plugin}/api/inetco")
 public class UploaderREST {
 	
-	public static final String DIRECTORY = "../temp/";
+	private static final String DIRECTORY = "../temp/";
+	private String endpoint;
+	
+	@POST
+	@Path("/drop")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public Response uploadFile(
+		@Context UriInfo info
+		,@FormDataParam("file") InputStream uploadedInputStream
+		,@FormDataParam("file") FormDataContentDisposition fileDetail
+			) throws URISyntaxException, UnsupportedEncodingException {
+
+		System.out.println("Hello...");
+		System.out.println(String.format("Endpoint: %s", endpoint));
+
+		return Response.ok().build();
+	}
 	
 	@POST
 	@Path("/send")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public Response uploadFile(
-		@Context UriInfo info,
-		@FormDataParam("file") InputStream uploadedInputStream,
-		@FormDataParam("file") FormDataContentDisposition fileDetail,
-
-		@FormDataParam("endpointPath") String endpointPath,
-		@FormDataParam("queryParameters") String queryParameters
+		@Context UriInfo info
+		,@FormDataParam("file") InputStream uploadedInputStream
+		,@FormDataParam("file") FormDataContentDisposition fileDetail
+		,@FormDataParam("endpointPath") String endpointPath
+		,@FormDataParam("queryParameters") String queryParameters
 			) throws URISyntaxException, UnsupportedEncodingException {
-		
-		
-		String uploadedFileLocation = DIRECTORY + fileDetail.getFileName();
 
+		String uploadedFileLocation = DIRECTORY + fileDetail.getFileName();
 		String filePath = new File(uploadedFileLocation).getAbsolutePath();
 		
 		try {
-			
 			writeToFile(uploadedInputStream, uploadedFileLocation);
-			
 		} catch (IOException e) {
 			System.out.println("[File Uploader] Error uploading file: "+filePath);
 			e.printStackTrace();
@@ -55,11 +66,9 @@ public class UploaderREST {
 		URI pentahoBaseUrl = info.getBaseUri().resolve("../");
 		endpointPath = pentahoBaseUrl + endpointPath;
 		endpointPath += "?paramfileUrl="+URLEncoder.encode(filePath,"UTF-8")+queryParameters;
-
 		return Response.temporaryRedirect(new URI(endpointPath)).build();
 	}
-	
-	
+		
 	private void writeToFile(InputStream uploadedInputStream,
 			String uploadedFileLocation) throws IOException {
 		File dir = new File(DIRECTORY);
@@ -76,4 +85,10 @@ public class UploaderREST {
 		out.close();
 	}
 
+	public String getEndpoint() {
+		return endpoint;
+	}
+	public void setEndpoint(String endpoint) {
+		this.endpoint = endpoint;
+	}
 }

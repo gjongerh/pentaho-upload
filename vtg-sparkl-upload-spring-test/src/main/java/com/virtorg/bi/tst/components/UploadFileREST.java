@@ -28,23 +28,19 @@ public class UploadFileREST {
 //	@Path("/file")
 //	@Consumes(MediaType.MULTIPART_FORM_DATA)
 //	public Response uploadFile(
-//		@Context UriInfo info,
-//		@FormDataParam("file") InputStream uploadedInputStream,
-//		@FormDataParam("file") FormDataContentDisposition fileDetail,
-//
-//		@FormDataParam("endpointPath") String endpointPath,
-//		@FormDataParam("queryParameters") String queryParameters
+//			@Context UriInfo info
+//			,@FormDataParam("file") InputStream uploadedInputStream
+//			,@FormDataParam("file") FormDataContentDisposition fileDetail
+//	
+////			,@FormDataParam("endpointPath") String endpointPath
+////			,@FormDataParam("queryParameters") String queryParameters
 //			) throws URISyntaxException, UnsupportedEncodingException {
 //		
-//		
 //		String uploadedFileLocation = DIRECTORY + fileDetail.getFileName();
-//
 //		String filePath = new File(uploadedFileLocation).getAbsolutePath();
 //		
 //		try {
-//			
 //			writeToFile(uploadedInputStream, uploadedFileLocation);
-//			
 //		} catch (IOException e) {
 //			System.out.println("[File Uploader] Error uploading file: "+filePath);
 //			e.printStackTrace();

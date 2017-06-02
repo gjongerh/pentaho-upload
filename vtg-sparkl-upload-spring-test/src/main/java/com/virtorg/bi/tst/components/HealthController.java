@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class HealthController {
 
     @GET
-    @Path("/gerard")
+    @Path("/info")
     @Produces(MediaType.APPLICATION_JSON)
     public String health() {
     	return "Jersey: Up and Running!";
