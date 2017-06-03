@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 @Path("/upload")
 public class UploadFileREST {
 	
-	public static final String DIRECTORY = "./work/";
+	public static final String DIRECTORY = "./temp/";
 
     @GET
     @Path("/hello")
