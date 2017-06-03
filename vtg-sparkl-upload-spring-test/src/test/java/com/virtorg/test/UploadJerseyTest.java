@@ -11,13 +11,17 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import com.virtorg.bi.tst.JerseyConfig;
 
+/*
+ * inspired by https://geowarin.github.io/a-simple-spring-boot-and-jersey-application.html
+ * Author: Gerard Jongerhuis
+ * 
+ */
 public class UploadJerseyTest extends JerseyTest {
 
     @Override
     protected Application configure() {
         ApplicationContext context = new AnnotationConfigApplicationContext(TestConfig.class);
-        return new JerseyConfig()
-                .property("contextConfig", context);
+        return new JerseyConfig().property("contextConfig", context);
     }
 
     @Test
