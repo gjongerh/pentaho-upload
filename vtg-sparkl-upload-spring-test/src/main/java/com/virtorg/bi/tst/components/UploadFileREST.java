@@ -5,10 +5,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,37 +34,37 @@ public class UploadFileREST {
     }
 
 	
-//	@POST
-//	@Path("/file")
-//	@Consumes(MediaType.MULTIPART_FORM_DATA)
-//	public Response uploadFile(
-//			@Context UriInfo info
-//			,@FormDataParam("file") InputStream uploadedInputStream
-//			,@FormDataParam("file") FormDataContentDisposition fileDetail
-//	
-////			,@FormDataParam("endpointPath") String endpointPath
-////			,@FormDataParam("queryParameters") String queryParameters
-//			) throws URISyntaxException, UnsupportedEncodingException {
-//		
-//		String uploadedFileLocation = DIRECTORY + fileDetail.getFileName();
-//		String filePath = new File(uploadedFileLocation).getAbsolutePath();
-//		
-//		try {
-//			writeToFile(uploadedInputStream, uploadedFileLocation);
-//		} catch (IOException e) {
-//			System.out.println("[File Uploader] Error uploading file: "+filePath);
-//			e.printStackTrace();
-//		}
-// 
-////		URI pentahoBaseUrl = info.getBaseUri().resolve("../");
-////		endpointPath = pentahoBaseUrl + endpointPath;
-////		endpointPath += "?paramfileUrl="+URLEncoder.encode(filePath,"UTF-8")+queryParameters;
-////
-////		return Response.temporaryRedirect(new URI(endpointPath)).build();
-//		
-//		return Response.ok().build();
-//	}
-//	
+	@POST
+	@Path("/file")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public Response uploadFile(
+			@Context UriInfo info
+			,@FormDataParam("file") InputStream uploadedInputStream
+			,@FormDataParam("file") FormDataContentDisposition fileDetail
+	
+//			,@FormDataParam("endpointPath") String endpointPath
+//			,@FormDataParam("queryParameters") String queryParameters
+			) throws URISyntaxException, UnsupportedEncodingException {
+		
+		String uploadedFileLocation = DIRECTORY + fileDetail.getFileName();
+		String filePath = new File(uploadedFileLocation).getAbsolutePath();
+		
+		try {
+			writeToFile(uploadedInputStream, uploadedFileLocation);
+		} catch (IOException e) {
+			System.out.println("[File Uploader] Error uploading file: "+filePath);
+			e.printStackTrace();
+		}
+ 
+//		URI pentahoBaseUrl = info.getBaseUri().resolve("../");
+//		endpointPath = pentahoBaseUrl + endpointPath;
+//		endpointPath += "?paramfileUrl="+URLEncoder.encode(filePath,"UTF-8")+queryParameters;
+//
+//		return Response.temporaryRedirect(new URI(endpointPath)).build();
+		
+		return Response.ok().build();
+	}
+	
 	
 	private void writeToFile(InputStream uploadedInputStream,
 			String uploadedFileLocation) throws IOException {
