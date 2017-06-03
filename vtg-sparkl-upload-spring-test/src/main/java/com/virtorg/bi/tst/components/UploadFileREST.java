@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 @Path("/upload")
 public class UploadFileREST {
 	
-	public static final String DIRECTORY = "./work";
+	public static final String DIRECTORY = "./work/";
 
     @GET
     @Path("/hello")
@@ -41,7 +41,6 @@ public class UploadFileREST {
 			@Context UriInfo info
 			,@FormDataParam("file") InputStream uploadedInputStream
 			,@FormDataParam("file") FormDataContentDisposition fileDetail
-	
 //			,@FormDataParam("endpointPath") String endpointPath
 //			,@FormDataParam("queryParameters") String queryParameters
 			) throws URISyntaxException, UnsupportedEncodingException {
@@ -54,14 +53,9 @@ public class UploadFileREST {
 		} catch (IOException e) {
 			System.out.println("[File Uploader] Error uploading file: "+filePath);
 			e.printStackTrace();
+			return Response.serverError().build();
 		}
  
-//		URI pentahoBaseUrl = info.getBaseUri().resolve("../");
-//		endpointPath = pentahoBaseUrl + endpointPath;
-//		endpointPath += "?paramfileUrl="+URLEncoder.encode(filePath,"UTF-8")+queryParameters;
-//
-//		return Response.temporaryRedirect(new URI(endpointPath)).build();
-		
 		return Response.ok().build();
 	}
 	
