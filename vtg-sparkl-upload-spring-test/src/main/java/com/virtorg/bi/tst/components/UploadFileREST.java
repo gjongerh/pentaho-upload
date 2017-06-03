@@ -17,10 +17,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.stereotype.Component;
-
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
 
 @Component
 @Path("/upload")
@@ -65,7 +64,7 @@ public class UploadFileREST {
 //		
 //		return Response.ok().build();
 //	}
-	
+//	
 	
 	private void writeToFile(InputStream uploadedInputStream,
 			String uploadedFileLocation) throws IOException {
