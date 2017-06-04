@@ -22,6 +22,15 @@ import javax.ws.rs.core.UriInfo;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
+/*
+ * UploaderREST is a file uploader extension for Pentaho/Sparkl
+ * Heavily inspirend by Marcello Pontes http://blog.oncase.com.br/easy-uploader-for-pentaho-bi-server/ 
+ * 
+ * Author: Gerard Jongerhuis, g.jongerhuis@virtorg.nl
+ * 
+ *  With this uploader it is posible to upload a file to the Pentaho BI server. The file is placed under the tomcat folder in temp (in case of ../temp/).
+ */
+
 @Path("/{plugin}/api/upload")
 public class UploaderREST {
 	

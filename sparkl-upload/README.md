@@ -10,7 +10,7 @@ ICpkEnvironment environment = new CpkEnvironmentForTesting( pluginUtils, repAcce
 KettleEnvironment.init();
 ```
 
-For JUnit testing see more info https://jersey.github.io/documentation/1.19.1/test-framework.html for the current Jersey 1.x version. 
+This module (sub-project) has only unit testing and no testing environment available. See the other modules for testing the environment. For JUnit testing see more info https://jersey.github.io/documentation/1.19.1/test-framework.html for the current Jersey 1.x version. 
 
 # Development
 In ***src.main.java*** there is a class **com.virtorg.bi.sparkl.ws.UploaderREST** which is tested with the test class **com.virtorg.test.jersey.UploaderRestTest**.
