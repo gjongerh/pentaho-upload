@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -19,6 +20,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import org.json.simple.JSONObject;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
@@ -54,24 +57,25 @@ public class UploaderREST {
 		,@FormDataParam("file") FormDataContentDisposition fileDetail
 			) throws URISyntaxException, UnsupportedEncodingException {
 
-		System.out.println("Hello...");
 		System.out.println(String.format("Endpoint: %s", endpoint));
 
 		String uploadedFileLocation = DIRECTORY + fileDetail.getFileName();
 		File uploadFile = new File(uploadedFileLocation);
-		String filePath = uploadFile.getAbsolutePath();
-		String json = "";
-		System.out.println(String.format("filePath: %s", filePath));
+		String filePath = "";
 		try {
 			writeToFile(uploadedInputStream, uploadedFileLocation);
-			json = String.format("{\"filename\": \"%s\"}", uploadFile.getCanonicalPath());
+			filePath = uploadFile.getCanonicalPath();
+			System.out.println(String.format("filePath: %s", filePath));
 		} catch (IOException e) {
 			System.out.println("[File Uploader] Error uploading file: "+filePath);
 			e.printStackTrace();
 			Response.serverError().entity("Error uploading file: "+e.getMessage()).build();
 		}
-		
-		return Response.ok(json, MediaType.APPLICATION_JSON).build();
+
+		JSONObject json=new JSONObject();
+		json.put("filename", filePath);
+
+		return Response.ok(json.toJSONString(), MediaType.APPLICATION_JSON).build();
 	}
 	
 	@POST
