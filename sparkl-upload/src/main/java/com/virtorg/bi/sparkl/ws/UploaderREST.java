@@ -9,7 +9,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.util.HashMap;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -47,6 +46,7 @@ public class UploaderREST {
 		return "pong";
 	}
 	
+	@SuppressWarnings("unchecked")
 	@POST
 	@Path("/drop")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
