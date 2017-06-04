@@ -7,16 +7,16 @@ import org.junit.Test;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.test.framework.JerseyTest;
 
-public class UploadJerseyTest extends JerseyTest {
+public class UploaderRestTest extends JerseyTest {
 
-    public UploadJerseyTest()throws Exception {
-        super("com.virtorg.tst.jersey.component");
+    public UploaderRestTest()throws Exception {
+        super("com.virtorg.bi.sparkl.ws");
     }
 
     @Test
     public void pingTest() {
         WebResource webResource = resource();
-        String responseMsg = webResource.path("tst/ping").get(String.class);
+        String responseMsg = webResource.path("plugin/api/upload/ping").get(String.class);
         assertEquals("pong", responseMsg);
     }
 }

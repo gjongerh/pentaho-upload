@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>vtg-sparkl-upload</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
   <name>Sparkl File Upload and start transformation</name>
 
   <parent>
@@ -13,6 +13,7 @@
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <jersey.version>1.19.1</jersey.version>
   </properties>
 
   <description>Upload a file by multi-form or JSON/Base64 encoded and start a stransformation
@@ -21,12 +22,12 @@
   	<dependency>
   		<groupId>com.sun.jersey.contribs</groupId>
   		<artifactId>jersey-multipart</artifactId>
-  		<version>1.19.1</version>
+  		<version>${jersey.version}</version>
   	</dependency>
   	<dependency>
   		<groupId>com.sun.jersey.jersey-test-framework</groupId>
-  		<artifactId>jersey-test-framework-http</artifactId>
-  		<version>1.19.1</version>
+  		<artifactId>jersey-test-framework-grizzly2</artifactId>
+  		<version>${jersey.version}</version>
   	</dependency>
   </dependencies>
 </project>
