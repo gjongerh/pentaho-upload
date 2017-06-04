@@ -23,5 +23,10 @@
   		<artifactId>jersey-multipart</artifactId>
   		<version>1.19.1</version>
   	</dependency>
+  	<dependency>
+  		<groupId>com.sun.jersey.jersey-test-framework</groupId>
+  		<artifactId>jersey-test-framework-http</artifactId>
+  		<version>1.19.1</version>
+  	</dependency>
   </dependencies>
 </project>

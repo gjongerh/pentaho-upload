@@ -15,7 +15,6 @@ public class JerseyConfig extends ResourceConfig {
         //packages("com.virtorg.bi.tst.components");	// load all packages in this package
 		register(HealthController.class);
 		register(UploadFileREST.class);
-		//register(UploaderREST.class);
 	}
 
 }

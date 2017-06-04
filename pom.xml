@@ -12,6 +12,7 @@
     <modules>
     	<module>sparkl-upload</module>
     	<module>vtg-sparkl-upload-spring-test</module>
+    	<module>vtg-sparkl-upload-jersey-test</module>
     </modules>
 </project>
 

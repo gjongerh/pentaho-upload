@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 @Path("/upload")
 public class UploadFileREST {
 	
-	public static final String DIRECTORY = "./work/";
+	public static final String DIRECTORY = "./temp/";
 
     @GET
     @Path("/hello")
@@ -53,10 +53,10 @@ public class UploadFileREST {
 		} catch (IOException e) {
 			System.out.println("[File Uploader] Error uploading file: "+filePath);
 			e.printStackTrace();
-			return Response.serverError().build();
+			return Response.notModified(e.getMessage()).build();
 		}
  
-		return Response.ok().build();
+		return Response.ok("File upload succesfull...").build();
 	}
 	
 	
