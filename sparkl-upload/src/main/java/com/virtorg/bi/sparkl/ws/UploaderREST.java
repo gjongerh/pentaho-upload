@@ -14,6 +14,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -46,6 +47,7 @@ public class UploaderREST {
 	@POST
 	@Path("/drop")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces("application/json")
 	public Response uploadFile(
 		@Context UriInfo info
 		,@FormDataParam("file") InputStream uploadedInputStream
@@ -55,7 +57,21 @@ public class UploaderREST {
 		System.out.println("Hello...");
 		System.out.println(String.format("Endpoint: %s", endpoint));
 
-		return Response.ok().build();
+		String uploadedFileLocation = DIRECTORY + fileDetail.getFileName();
+		File uploadFile = new File(uploadedFileLocation);
+		String filePath = uploadFile.getAbsolutePath();
+		String json = "";
+		System.out.println(String.format("filePath: %s", filePath));
+		try {
+			writeToFile(uploadedInputStream, uploadedFileLocation);
+			json = String.format("{\"filename\": \"%s\"}", uploadFile.getCanonicalPath());
+		} catch (IOException e) {
+			System.out.println("[File Uploader] Error uploading file: "+filePath);
+			e.printStackTrace();
+			Response.serverError().entity("Error uploading file: "+e.getMessage()).build();
+		}
+		
+		return Response.ok(json, MediaType.APPLICATION_JSON).build();
 	}
 	
 	@POST

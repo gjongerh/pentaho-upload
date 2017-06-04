@@ -41,7 +41,7 @@ public class UploadFile {
 		,@FormDataParam("endpointPath") String endpointPath
 			) throws URISyntaxException, UnsupportedEncodingException {
 
-		System.out.println("Hello...");
+		System.out.println("Testing multi-part...");
 
 		String uploadedFileLocation = DIRECTORY + fileDetail.getFileName();
 		String filePath = new File(uploadedFileLocation).getAbsolutePath();
