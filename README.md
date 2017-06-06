@@ -10,7 +10,9 @@ ICpkEnvironment environment = new CpkEnvironmentForTesting( pluginUtils, repAcce
 KettleEnvironment.init();
 ```
 
-To build a testing environment for Jersey 1.x we need a WAR file running on tomcat (or other). This is done in the **vtg-sparkl-upload-jersey-test** project. I havent studied the solution with Jersey and a glassfish serverwith grizzly.
+JUnit is working for this **vtg-sparkl-upload** project. It makes use of the Jersey testing framework. The testing framework boots up his own environment and executes the client and server. 
+
+To build a testing environment for Jersey 1.x we need a WAR file running on tomcat (or other). This is done in the **vtg-sparkl-upload-jersey-test** project. I haven't studied the solution with Jersey and a glassfish serverwith grizzly.
 
 Because of my own knowledge if have chosen to use a spring project with jersey support. So i have setup the **vtg-sparkl-upload-spring-test** project for testing with Spring boot and Jersey 2.x project. I may asume that Pentaho will migrata to Jersey 2.x in the neer future.
 

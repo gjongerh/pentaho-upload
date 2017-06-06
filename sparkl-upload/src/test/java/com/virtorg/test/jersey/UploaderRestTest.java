@@ -19,7 +19,9 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.MultiPart;
 import com.sun.jersey.multipart.file.FileDataBodyPart;
+import com.sun.jersey.test.framework.AppDescriptor;
 import com.sun.jersey.test.framework.JerseyTest;
+import com.sun.jersey.test.framework.WebAppDescriptor;
 
 /*
  * Author: Gerard Jongerhuis, g.jongerhuis@virtorg.nl
@@ -30,6 +32,14 @@ public class UploaderRestTest extends JerseyTest {
         super("com.virtorg.bi.sparkl.ws");
     }
 
+    @Override
+    protected AppDescriptor configure() {
+        return new WebAppDescriptor.Builder("com.virtorg.bi.sparkl.ws")
+            .initParam("com.sun.jersey.api.json.POJOMappingFeature", "true")
+            .build();
+    } // configure()
+
+    
     @Test
     public void pingTest() {
         WebResource webResource = resource();
@@ -40,6 +50,7 @@ public class UploaderRestTest extends JerseyTest {
 	/*
 	 * Test upload file "work/eurotext.tif" to "../temp/eurotext.tif"
 	 * and cleanup the uploaded file
+	 * 
 	 */
     @Test
 	public void uploadTest() throws IOException, ParseException {
@@ -57,18 +68,21 @@ public class UploaderRestTest extends JerseyTest {
 
 		ClientResponse response = webResource.path("plugin/api/upload/drop")
 			.type(MediaType.MULTIPART_FORM_DATA_TYPE)		// multiPartEntity.getMediaType() gives multipart/mixed
+			.accept("application/json")
 			.post(ClientResponse.class, multiPartEntity);
 
 		multiPartEntity.close();
 
 		assertEquals(200, response.getStatus());
-
+		assertEquals("application/json", response.getType().toString());
+		
 		// Extract filename from json
-		String strJson = response.getEntity(String.class);
 		JSONParser parser = new JSONParser();
-		JSONObject json = (JSONObject)parser.parse(strJson);
+		JSONObject json = (JSONObject)parser.parse(response.getEntity(String.class));
 		String filename = (String) json.get("filename");
 		System.out.println("Filename: "+filename);
+
+		//JSONObject json2 = response.getEntity(JSONObject.class);
 		
 		File uploaded = new File(filename);
 		assertTrue(uploaded.exists());
