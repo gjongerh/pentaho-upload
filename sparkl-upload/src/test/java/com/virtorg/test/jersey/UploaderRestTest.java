@@ -22,6 +22,7 @@ import com.sun.jersey.multipart.file.FileDataBodyPart;
 import com.sun.jersey.test.framework.AppDescriptor;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.WebAppDescriptor;
+import com.virtorg.bi.sparkl.ws.UploaderREST;
 
 /*
  * Author: Gerard Jongerhuis, g.jongerhuis@virtorg.nl
@@ -47,7 +48,18 @@ public class UploaderRestTest extends JerseyTest {
         assertEquals("pong", responseMsg);
     }
 
-	/*
+    @Test
+    public void parameterTest() {
+    	UploaderREST component = new UploaderREST();
+    	assertNotNull(component);
+    	
+    	component.setMyFolder("folder");
+    	assertEquals("folder", component.getMyFolder());
+    	component.setEndpoint("endpoint");
+    	assertEquals("endpoint", component.getEndpoint());
+    }
+    
+    /*
 	 * Test upload file "work/eurotext.tif" to "../temp/eurotext.tif"
 	 * and cleanup the uploaded file
 	 * 

@@ -38,7 +38,8 @@ import com.sun.jersey.multipart.FormDataParam;
 public class UploaderREST {
 	
 	private static final String DIRECTORY = "../temp/";
-	private String endpoint;
+	private String myFolder = "folder";
+	private String endpoint = "pentaho/plugin";
 	
 	@GET
 	@Path("/ping")
@@ -59,7 +60,7 @@ public class UploaderREST {
 
 		System.out.println(String.format("Endpoint: %s", endpoint));
 
-		String uploadedFileLocation = DIRECTORY + fileDetail.getFileName();
+		String uploadedFileLocation = DIRECTORY + myFolder + "/" + fileDetail.getFileName();
 		File uploadFile = new File(uploadedFileLocation);
 		String filePath = "";
 		try {
@@ -107,7 +108,7 @@ public class UploaderREST {
 		
 	private void writeToFile(InputStream uploadedInputStream,
 			String uploadedFileLocation) throws IOException {
-		File dir = new File(DIRECTORY);
+		File dir = new File(DIRECTORY+myFolder+"/");
 		dir.mkdirs();
 		File file = new File(uploadedFileLocation);
 		file.createNewFile();
@@ -121,6 +122,12 @@ public class UploaderREST {
 		out.close();
 	}
 
+	public String getMyFolder() {
+		return myFolder;
+	}
+	public void setMyFolder(String folder) {
+		this.myFolder = folder;
+	}
 	public String getEndpoint() {
 		return endpoint;
 	}
