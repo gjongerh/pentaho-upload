@@ -6,9 +6,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.ws.rs.core.MediaType;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -49,7 +51,7 @@ public class UploaderRestTest extends JerseyTest {
     public void pingTest() {
         WebResource webResource = resource();
         String responseMsg = webResource.path("plugin/api/ping").get(String.class);
-        assertEquals("pong", responseMsg);
+        assertEquals("[\"pong\"]", responseMsg);
     }
 
     @Test
@@ -151,6 +153,10 @@ public class UploaderRestTest extends JerseyTest {
     	assertEquals("plugin/test/endpoint", component.getEndpoint());
     }
     
+    /*
+     * endpoint plugin/api/upload/send has by default a reference to the PingPong testing endpoint
+     * so for testing we get the result of ["pong"] 
+     */
     @Test
 	public void uploadSendTest() throws IOException, ParseException {
     	WebResource webResource = resource();
@@ -181,10 +187,9 @@ public class UploaderRestTest extends JerseyTest {
 		
 		// Extract filename from json
 		JSONParser parser = new JSONParser();
-		JSONObject json = (JSONObject)parser.parse(response.getEntity(String.class));
-		System.out.println(json);
-		//String filename = (String) json.get("filename");
-		//System.out.println("Filename: "+filename);
-
+		String result = response.getEntity(String.class);
+		JSONArray myTemp = (JSONArray)parser.parse(result);
+		assertEquals( 1, myTemp.size());
+		assertEquals( "pong", myTemp.get(0));
 	}
 }

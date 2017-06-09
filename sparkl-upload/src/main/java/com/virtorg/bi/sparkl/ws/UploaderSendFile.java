@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -14,7 +15,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class UploaderSendFile {
 	private Logger log = LoggerFactory.getLogger(UploaderSendFile.class);
 	
 	private static final String FOLDER = "send_temp";
-	private String endpoint = "pentaho/plugin";
+	private String endpoint = "plugin/api/ping";
 	
 	private BiServerFileSave fs;
 	
@@ -47,13 +47,13 @@ public class UploaderSendFile {
 		fs = new BiServerFileSave();
 	}
 	
-	@SuppressWarnings("unchecked")
 	@POST
 	@Path("/")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response uploadFile(
 		@Context UriInfo info
+		,@Context HttpServletRequest request
 		,@FormDataParam("file") InputStream uploadedInputStream
 		,@FormDataParam("file") FormDataContentDisposition fileDetail
 		,@FormDataParam("queryParameters") String queryParameters
@@ -70,17 +70,24 @@ public class UploaderSendFile {
 			return Response.notModified(e.getMessage()).build();
 		}
  
+		// Request context
+		System.out.println(String.format("BaseURI(%s) Uri(%s)...", info.getBaseUri(), info.getAbsolutePath()));
+		System.out.println(String.format("endpoint: %s...", info.getBaseUri()+endpoint));
+		System.out.println(String.format("Authorization(%s)...", request.getHeader("Authorization")));
+		
+		// Start processing the file
 		Client client = Client.create();
-		WebResource webResource = client.resource("http://localhost:8080/pentaho/plugin/tools/api/upload/ping");
-		ClientResponse response = webResource.accept("text/html").get(ClientResponse.class);
-		String output = response.getEntity(String.class);
-		log.info(output);
+		WebResource webResource = client.resource(info.getBaseUri()+endpoint);
+		ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 		
-		
-		JSONObject json = new JSONObject();
-		json.put("data", "testing");
-		
-		return Response.ok(json.toJSONString(), MediaType.APPLICATION_JSON).build();
+		if(response.getStatus() == 200) {
+			// call succeeded send the received content to the caller
+			String output = response.getEntity(String.class);
+			log.info(output);
+			return Response.ok(output, MediaType.APPLICATION_JSON).build();
+		} else {
+			return Response.status(response.getStatus()).build();
+		}
 	}
 		
 	public String getEndpoint() {
