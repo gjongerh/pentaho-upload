@@ -94,7 +94,7 @@ public class UploaderSendFile {
 		if(response.getStatus() == 200) {
 			// call succeeded send the received content to the caller
 			String output = response.getEntity(String.class);
-			System.out.println(output);
+			log.debug(output);
 			return Response.ok(output, MediaType.APPLICATION_JSON).build();
 		} else {
 			return Response.status(response.getStatus()).build();

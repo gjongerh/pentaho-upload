@@ -18,6 +18,20 @@ In the ***src.test.java*** there is a test class fot testing the functionality w
 
 # Installation
 
+```XML
+    <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
+    <bean id="tools.ping.api" class="com.virtorg.bi.sparkl.ws.UploaderPingPong"/>
+    <bean id="tools.drop.api" class="com.virtorg.bi.sparkl.ws.UploaderDropFile">
+		<property name="folder" value="folder" />
+	</bean>
+    <bean id="tools.send.api" class="com.virtorg.bi.sparkl.ws.UploaderSendFile">
+		<property name="endpoint" value="tools/api/demo" />
+	</bean>
+    <bean id="tools.redir.api" class="com.virtorg.bi.sparkl.ws.UploaderRedirFile">
+		<property name="endpoint" value="plugin/tools/api/demo" />
+	</bean>
+    <bean id="tools.api" class="pt.webdetails.cpk.CpkApi"/>
+```
 
 # Usage
 
