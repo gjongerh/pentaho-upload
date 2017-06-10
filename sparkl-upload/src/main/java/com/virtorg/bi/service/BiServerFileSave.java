@@ -9,6 +9,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,9 +30,13 @@ public class BiServerFileSave {
 		//make the new filename
 		DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		Date date = new Date();
-		System.out.println(dateFormat.format(date));
+		String newFile = FilenameUtils.getPathNoEndSeparator(uploadedFileLocation) 
+				+ "/" +FilenameUtils.getBaseName(uploadedFileLocation) 
+				+ "__" + dateFormat.format(date) 
+				+ "." + FilenameUtils.getExtension(uploadedFileLocation);
+		log.debug(newFile);
 		
-		File file = new File(DIRECTORY + uploadedFileLocation);
+		File file = new File(DIRECTORY + newFile);
 		log.debug(String.format("Filename: %s", file.getCanonicalPath()));
 		
 		// find parent folder of the file and make sure that it exist
@@ -52,5 +57,4 @@ public class BiServerFileSave {
 		
 		return file.getCanonicalPath();
 	}
-
 }

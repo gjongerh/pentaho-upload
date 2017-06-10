@@ -20,8 +20,9 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.core.util.Base64;
 import com.sun.jersey.multipart.FormDataParam;
 import com.virtorg.bi.service.BiServerFileSave;
 
@@ -70,20 +71,30 @@ public class UploaderSendFile {
 			return Response.notModified(e.getMessage()).build();
 		}
  
-		// Request context
-		System.out.println(String.format("BaseURI(%s) Uri(%s)...", info.getBaseUri(), info.getAbsolutePath()));
-		System.out.println(String.format("endpoint: %s...", info.getBaseUri()+endpoint));
-		System.out.println(String.format("Authorization(%s)...", request.getHeader("Authorization")));
-		
 		// Start processing the file
 		Client client = Client.create();
-		WebResource webResource = client.resource(info.getBaseUri()+endpoint);
-		ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+		// if basic authorization exist reuse it in the new request
+		if(request.getHeader("Authorization") != null) {
+			String auth = request.getHeader("Authorization");
+			String decoded = Base64.base64Decode(auth.split(" ")[1]);
+			String[] userPassword = decoded.split(":");
+			client.addFilter(new HTTPBasicAuthFilter(userPassword[0], userPassword[1]));
+		} else {
+			log.error("ERROR: no authorization header found, client access will fail...");
+		}
+
+		log.debug(String.format("Using endpoint(%s)...", info.getBaseUri()+endpoint));
+
+		ClientResponse response = client
+			.resource(info.getBaseUri()+endpoint)
+			.accept(MediaType.APPLICATION_JSON)
+			.get(ClientResponse.class);
 		
 		if(response.getStatus() == 200) {
 			// call succeeded send the received content to the caller
 			String output = response.getEntity(String.class);
-			log.info(output);
+			System.out.println(output);
 			return Response.ok(output, MediaType.APPLICATION_JSON).build();
 		} else {
 			return Response.status(response.getStatus()).build();
