@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<div>
+			<h2>File Drop test page</h2>
+			<hr/>
+			<p>Select file and click on "Drop File". The file should apear in the folder located under tomcat/temp/??</p>
+		</div>
+		<div>
+			<form action="/pentaho/plugin/tools/api/upload/drop" method="post" enctype="multipart/form-data" >
+				<input type="file" name="file" id="file">
+				<input type="submit" value="Drop File" name="submit">
+			</form>
+		</div>
+	</body>
+</html>

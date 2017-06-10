@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<div>
+			<h2>File Redir test page</h2>
+			<hr/>
+			<p>Select file and click on "Send File".</p>
+			<p>After the upload the file should be processed by the endpoint "plugin/tools/api/demo" and the resulting json should be displayed.</p>
+		</div>
+		<div>
+			<form action="/pentaho/plugin/tools/api/upload/redir" method="post" enctype="multipart/form-data" >
+				<input type="file" name="file" id="file">
+				<input type="hidden" name="queryParameters" id="queryParameters" value="&paramtemplate=tapa-default">
+				<input type="submit" value="Send File" name="submit">
+			</form>
+		</div>
+	</body>
+</html>
