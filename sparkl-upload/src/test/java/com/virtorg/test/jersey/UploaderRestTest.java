@@ -97,8 +97,6 @@ public class UploaderRestTest extends JerseyTest {
 		String filename = (String) json.get("filename");
 		System.out.println("Filename: "+filename);
 
-		//JSONObject json2 = response.getEntity(JSONObject.class);
-		
 		File uploaded = new File(filename);
 		assertTrue(uploaded.exists());
 		

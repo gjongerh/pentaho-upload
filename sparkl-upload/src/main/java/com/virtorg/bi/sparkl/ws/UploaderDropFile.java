@@ -15,6 +15,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
@@ -31,6 +33,7 @@ import com.virtorg.bi.service.BiServerFileSave;
 
 @Path("/{plugin}/api/upload/drop")
 public class UploaderDropFile {
+	private Logger log = LoggerFactory.getLogger(UploaderDropFile.class);
 	
 	private String folder = "folder";
 	private BiServerFileSave fs;
@@ -54,9 +57,9 @@ public class UploaderDropFile {
 		String filePath = "";
 		try {
 			filePath = fs.writeToFile(uploadedInputStream, uploadedFileLocation);
-			System.out.println(String.format("filePath: %s", filePath));
+			log.debug(String.format("filePath: %s", filePath));
 		} catch (IOException e) {
-			System.out.println("[File Uploader] Error uploading file: "+filePath);
+			log.error("[File Uploader] Error uploading file: "+filePath);
 			e.printStackTrace();
 			Response.serverError().entity("Error uploading file: "+e.getMessage()).build();
 		}
