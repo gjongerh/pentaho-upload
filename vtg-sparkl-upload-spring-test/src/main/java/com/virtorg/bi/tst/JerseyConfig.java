@@ -16,5 +16,4 @@ public class JerseyConfig extends ResourceConfig {
 		register(HealthController.class);
 		register(UploadFileREST.class);
 	}
-
 }

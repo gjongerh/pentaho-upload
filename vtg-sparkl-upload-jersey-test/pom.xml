@@ -36,6 +36,6 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	
 </project>
