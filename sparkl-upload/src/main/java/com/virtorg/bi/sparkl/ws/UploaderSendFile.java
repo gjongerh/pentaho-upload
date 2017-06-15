@@ -15,6 +15,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +28,7 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.core.util.Base64;
 import com.sun.jersey.multipart.FormDataParam;
 import com.virtorg.bi.service.BiServerFileSave;
+import com.virtorg.bi.sparkl.dto.SendResponse;
 
 /*
  * UploaderREST is a file uploader extension for Pentaho/Sparkl
@@ -32,7 +36,10 @@ import com.virtorg.bi.service.BiServerFileSave;
  * 
  * Author: Gerard Jongerhuis, g.jongerhuis@virtorg.nl
  * 
- *  With this uploader it is possible to upload a file to the Pentaho BI server. The file is placed under the tomcat folder in temp (in case of ../temp/).
+ * With this uploader it is possible to upload a file to the Pentaho BI server. The file is placed under the tomcat folder in temp (in case of ../temp/).
+ *  
+ * Receiving a file and JSON data
+ * entries in the JSON that start with "param" will be used as a parameter in calling the Pentaho Endpoint  
  */
 
 @Path("/{plugin}/api/upload/send")
@@ -41,6 +48,8 @@ public class UploaderSendFile {
 	
 	private static final String FOLDER = "send_temp";
 	private String endpoint = "plugin/api/ping";
+	private String user = "mdm";
+	private String password = "mdm08UI%56";
 	
 	private BiServerFileSave fs;
 	
@@ -50,14 +59,28 @@ public class UploaderSendFile {
 	
 	@POST
 	@Path("/")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response uploadFile(	@Context UriInfo info) throws JsonGenerationException, JsonMappingException, IOException {
+
+		ObjectMapper mapper = new ObjectMapper();		// POJO to JSON
+
+		SendResponse result = new SendResponse();
+		
+		return Response.ok(mapper.writeValueAsString(result), MediaType.APPLICATION_JSON).build();
+	}
+	
+	
+	@POST
+	@Path("/")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	@Produces({ MediaType.APPLICATION_JSON })
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response uploadFile(
 		@Context UriInfo info
 		,@Context HttpServletRequest request
 		,@FormDataParam("file") InputStream uploadedInputStream
 		,@FormDataParam("file") FormDataContentDisposition fileDetail
-		,@FormDataParam("queryParameters") String queryParameters
+		,@FormDataParam("data") String data
 			) throws URISyntaxException, UnsupportedEncodingException {
 
 		String uploadedFileLocation = FOLDER + "/" + fileDetail.getFileName();
@@ -81,13 +104,20 @@ public class UploaderSendFile {
 			String[] userPassword = decoded.split(":");
 			client.addFilter(new HTTPBasicAuthFilter(userPassword[0], userPassword[1]));
 		} else {
-			log.error("ERROR: no authorization header found, client access will fail...");
+			client.addFilter(new HTTPBasicAuthFilter( user, password));
 		}
 
-		log.debug(String.format("Using endpoint(%s)...", info.getBaseUri()+endpoint));
+		String url = "";
+		if(endpoint.startsWith("http")) {
+			url = endpoint;
+		} else {
+			url = info.getBaseUri()+endpoint;
+		}
+		log.debug(String.format("Using endpoint(%s)...", url));
+		System.out.println(String.format("Using endpoint(%s)...", url));
 
 		ClientResponse response = client
-			.resource(info.getBaseUri()+endpoint)
+			.resource(url)
 			.accept(MediaType.APPLICATION_JSON)
 			.get(ClientResponse.class);
 		
@@ -106,5 +136,21 @@ public class UploaderSendFile {
 	}
 	public void setEndpoint(String endpoint) {
 		this.endpoint = endpoint;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 }

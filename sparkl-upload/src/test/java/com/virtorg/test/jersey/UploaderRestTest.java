@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import javax.ws.rs.core.MediaType;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -25,6 +26,8 @@ import com.sun.jersey.multipart.file.FileDataBodyPart;
 import com.sun.jersey.test.framework.AppDescriptor;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.WebAppDescriptor;
+import com.virtorg.bi.sparkl.dto.FileReceived;
+import com.virtorg.bi.sparkl.dto.SendResponse;
 import com.virtorg.bi.sparkl.ws.UploaderDropFile;
 import com.virtorg.bi.sparkl.ws.UploaderRedirFile;
 import com.virtorg.bi.sparkl.ws.UploaderSendFile;
@@ -148,6 +151,12 @@ public class UploaderRestTest extends JerseyTest {
     	
     	component.setEndpoint("plugin/test/endpoint");
     	assertEquals("plugin/test/endpoint", component.getEndpoint());
+    	
+    	component.setUser("admin01");
+    	assertEquals("admin01", component.getUser());
+    	
+    	component.setPassword("passWord01");
+    	assertEquals("passWord01", component.getPassword());
     }
     
     /*
@@ -174,7 +183,7 @@ public class UploaderRestTest extends JerseyTest {
 
 		ClientResponse response = webResource.path("plugin/api/upload/send")
 			.type(multiPartEntity.getMediaType())
-			.accept("application/json")
+			.accept(MediaType.APPLICATION_JSON)
 			.post(ClientResponse.class, multiPartEntity);
 
 		multiPartEntity.close();
@@ -188,5 +197,31 @@ public class UploaderRestTest extends JerseyTest {
 		JSONArray myTemp = (JSONArray)parser.parse(result);
 		assertEquals( 1, myTemp.size());
 		assertEquals( "pong", myTemp.get(0));
+	}
+    
+    @Test
+	public void uploadSendJsonTest() throws IOException, ParseException {
+    	WebResource webResource = resource();
+		assertNotNull(webResource);
+		webResource.setProperty(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, false);
+
+		FileReceived sendfile = new FileReceived();
+		sendfile.setFilename("magweg01.txt");
+		//sendfile.setData(new JSONObject());
+		
+		ObjectMapper mapper = new ObjectMapper();		// POJO to JSON
+		
+		ClientResponse response = webResource.path("plugin/api/upload/send")
+			.type(MediaType.APPLICATION_JSON)
+			.accept(MediaType.APPLICATION_JSON)
+			.post(ClientResponse.class, mapper.writeValueAsString(sendfile));
+
+
+		assertEquals(200, response.getStatus());
+		assertEquals(MediaType.APPLICATION_JSON, response.getType().toString());
+		
+		// Extract filename from json
+		SendResponse result = mapper.readValue(response.getEntity(String.class), SendResponse.class);
+		assertTrue( result.getTimestamp().length() > 4);
 	}
 }
