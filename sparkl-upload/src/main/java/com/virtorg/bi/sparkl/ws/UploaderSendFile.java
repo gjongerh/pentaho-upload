@@ -1,5 +1,6 @@
 package com.virtorg.bi.sparkl.ws;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -28,6 +29,7 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.core.util.Base64;
 import com.sun.jersey.multipart.FormDataParam;
 import com.virtorg.bi.service.BiServerFileSave;
+import com.virtorg.bi.sparkl.dto.FileReceived;
 import com.virtorg.bi.sparkl.dto.SendResponse;
 
 /*
@@ -61,13 +63,35 @@ public class UploaderSendFile {
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response uploadFile(	@Context UriInfo info) throws JsonGenerationException, JsonMappingException, IOException {
+	public Response uploadFile(	@Context UriInfo info, @Context HttpServletRequest request) throws JsonGenerationException, JsonMappingException, IOException {
 
 		ObjectMapper mapper = new ObjectMapper();		// POJO to JSON
-
-		SendResponse result = new SendResponse();
+		FileReceived fileReceived = mapper.readValue(request.getInputStream(), FileReceived.class);
+		System.out.println("Filename: "+fileReceived.getFilename());
 		
-		return Response.ok(mapper.writeValueAsString(result), MediaType.APPLICATION_JSON).build();
+		String uploadedFileLocation = FOLDER + "/" + fileReceived.getFilename();
+		String filePath = "";
+		
+		try {
+			filePath = fs.writeToFile( new ByteArrayInputStream(Base64.decode(fileReceived.getFile())), uploadedFileLocation);
+		} catch (IOException e) {
+			log.error("[File Uploader] Error uploading file: "+filePath);
+			e.printStackTrace();
+			return Response.notModified(e.getMessage()).build();
+		}
+
+		ClientResponse response = processRequest(info, request);
+		
+		SendResponse result = new SendResponse();
+		if(response.getStatus() == 200) {
+			// call succeeded send the received content to the caller
+			result.setMessage(response.getEntity(String.class));
+			log.debug(response.getEntity(String.class));
+			return Response.ok(mapper.writeValueAsString(result), MediaType.APPLICATION_JSON).build();
+		} else {
+			return Response.status(response.getStatus()).build();
+		}
+
 	}
 	
 	
@@ -94,6 +118,19 @@ public class UploaderSendFile {
 			return Response.notModified(e.getMessage()).build();
 		}
  
+		ClientResponse response = processRequest(info, request);
+		
+		if(response.getStatus() == 200) {
+			// call succeeded send the received content to the caller
+			String output = response.getEntity(String.class);
+			log.debug(output);
+			return Response.ok(output, MediaType.APPLICATION_JSON).build();
+		} else {
+			return Response.status(response.getStatus()).build();
+		}
+	}
+
+	private ClientResponse processRequest(UriInfo info, HttpServletRequest request) {
 		// Start processing the file
 		Client client = Client.create();
 
@@ -120,15 +157,7 @@ public class UploaderSendFile {
 			.resource(url)
 			.accept(MediaType.APPLICATION_JSON)
 			.get(ClientResponse.class);
-		
-		if(response.getStatus() == 200) {
-			// call succeeded send the received content to the caller
-			String output = response.getEntity(String.class);
-			log.debug(output);
-			return Response.ok(output, MediaType.APPLICATION_JSON).build();
-		} else {
-			return Response.status(response.getStatus()).build();
-		}
+		return response;
 	}
 		
 	public String getEndpoint() {

@@ -19,6 +19,7 @@ import org.junit.Test;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.core.util.Base64;
 import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
 import com.sun.jersey.multipart.MultiPart;
@@ -207,6 +208,7 @@ public class UploaderRestTest extends JerseyTest {
 
 		FileReceived sendfile = new FileReceived();
 		sendfile.setFilename("magweg01.txt");
+		sendfile.setFile(Base64.encode("This is a test for sending a file base64 encoded..."));
 		//sendfile.setData(new JSONObject());
 		
 		ObjectMapper mapper = new ObjectMapper();		// POJO to JSON

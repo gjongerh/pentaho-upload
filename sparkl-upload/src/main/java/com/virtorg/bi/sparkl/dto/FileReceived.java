@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class FileReceived {
 
-	private String file;
+	private byte[] file;
 	private String filename;
 	private JSONObject data;
 }
