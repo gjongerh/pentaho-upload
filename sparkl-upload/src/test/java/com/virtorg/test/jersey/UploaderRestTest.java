@@ -209,7 +209,11 @@ public class UploaderRestTest extends JerseyTest {
 		FileReceived sendfile = new FileReceived();
 		sendfile.setFilename("magweg01.txt");
 		sendfile.setFile(Base64.encode("This is a test for sending a file base64 encoded..."));
-		//sendfile.setData(new JSONObject());
+		
+		JSONObject data = new JSONObject();
+		data.put( "paramTester", "proef");
+		data.put( "paramproef", "test");
+		sendfile.setData(data);
 		
 		ObjectMapper mapper = new ObjectMapper();		// POJO to JSON
 		

@@ -19,6 +19,7 @@ import javax.ws.rs.core.UriInfo;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.core.util.Base64;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.multipart.FormDataParam;
 import com.virtorg.bi.service.BiServerFileSave;
 import com.virtorg.bi.sparkl.dto.FileReceived;
@@ -50,8 +52,8 @@ public class UploaderSendFile {
 	
 	private static final String FOLDER = "send_temp";
 	private String endpoint = "plugin/api/ping";
-	private String user = "mdm";
-	private String password = "mdm08UI%56";
+	private String user = "admin";
+	private String password = "password";
 	
 	private BiServerFileSave fs;
 	
@@ -67,7 +69,7 @@ public class UploaderSendFile {
 
 		ObjectMapper mapper = new ObjectMapper();		// POJO to JSON
 		FileReceived fileReceived = mapper.readValue(request.getInputStream(), FileReceived.class);
-		System.out.println("Filename: "+fileReceived.getFilename());
+		//System.out.println("Filename: "+fileReceived.getFilename());
 		
 		String uploadedFileLocation = FOLDER + "/" + fileReceived.getFilename();
 		String filePath = "";
@@ -77,16 +79,28 @@ public class UploaderSendFile {
 		} catch (IOException e) {
 			log.error("[File Uploader] Error uploading file: "+filePath);
 			e.printStackTrace();
-			return Response.notModified(e.getMessage()).build();
+
+			return Response.notModified("ERROR uploading file due to => "+e.getMessage()).build();
 		}
 
-		ClientResponse response = processRequest(info, request);
+		ClientResponse response = processRequest(info, request, filePath, fileReceived.getData());
 		
 		SendResponse result = new SendResponse();
 		if(response.getStatus() == 200) {
 			// call succeeded send the received content to the caller
-			result.setMessage(response.getEntity(String.class));
-			log.debug(response.getEntity(String.class));
+			JSONObject resultData = new JSONObject();
+			try {
+				resultData = mapper.readValue(response.getEntity(String.class), JSONObject.class);
+				//System.out.println(resultData.toJSONString());
+				log.debug(resultData.toJSONString());
+			} catch (Exception e) {
+				result.setMessage("ERROR: Result of endpoint was not parseble JSON...");
+				return Response.ok(mapper.writeValueAsString(result), MediaType.APPLICATION_JSON).build();
+			}
+			
+			result.setData(resultData);
+			result.setMessage("successful");
+
 			return Response.ok(mapper.writeValueAsString(result), MediaType.APPLICATION_JSON).build();
 		} else {
 			return Response.status(response.getStatus()).build();
@@ -118,7 +132,7 @@ public class UploaderSendFile {
 			return Response.notModified(e.getMessage()).build();
 		}
  
-		ClientResponse response = processRequest(info, request);
+		ClientResponse response = processRequest(info, request, filePath, null);
 		
 		if(response.getStatus() == 200) {
 			// call succeeded send the received content to the caller
@@ -130,8 +144,9 @@ public class UploaderSendFile {
 		}
 	}
 
-	private ClientResponse processRequest(UriInfo info, HttpServletRequest request) {
+	private ClientResponse processRequest(UriInfo info, HttpServletRequest request, String filePath, JSONObject data) {
 		// Start processing the file
+		log.debug("Entry: processRequest...");
 		Client client = Client.create();
 
 		// if basic authorization exist reuse it in the new request
@@ -151,10 +166,24 @@ public class UploaderSendFile {
 			url = info.getBaseUri()+endpoint;
 		}
 		log.debug(String.format("Using endpoint(%s)...", url));
-		System.out.println(String.format("Using endpoint(%s)...", url));
+		//System.out.println(String.format("Using endpoint(%s)...", url));
 
+		// Create GET parameters for the request
+		MultivaluedMapImpl params = new MultivaluedMapImpl();
+		params.add("paramFilename", filePath);
+		if(data != null) {
+			log.debug(data.toJSONString());
+			for (Object key : data.keySet()) {
+				String keyStr = (String)key;
+				if(keyStr.startsWith("param")) {
+					params.add(keyStr, data.get(key));
+				}
+			}
+		}
+		
 		ClientResponse response = client
 			.resource(url)
+			.queryParams(params)
 			.accept(MediaType.APPLICATION_JSON)
 			.get(ClientResponse.class);
 		return response;
